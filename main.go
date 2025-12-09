@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -52,7 +53,6 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 	newBook.Id = strconv.Itoa(len(MyBooks) + 1)
 	MyBooks = append(MyBooks, newBook)
 	fmt.Fprint(w, "200 OK")
-
 }
 
 func getBookById(w http.ResponseWriter, r *http.Request) {
@@ -69,9 +69,20 @@ func getBookById(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func createBookInterface(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("index.html")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tmpl.Execute(w, nil)
+}
+
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/books", getBooks).Methods("GET")
+	r.HandleFunc("/create_book", createBookInterface).Methods("GET")
+
 	r.HandleFunc("/books", createBook).Methods("POST")
 	r.HandleFunc("/books/{id}", getBookById).Methods("GET")
 
