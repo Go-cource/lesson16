@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -38,9 +39,22 @@ func getBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(MyBooks)
 }
+
 func createBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var newBook Books
+	err := json.NewDecoder(r.Body).Decode(&newBook)
+	if err != nil {
+		log.Println("Error while decoding: ", err)
+		fmt.Fprint(w, "504 Internal Error")
+		return
+	}
+	newBook.Id = strconv.Itoa(len(MyBooks) + 1)
+	MyBooks = append(MyBooks, newBook)
+	fmt.Fprint(w, "200 OK")
 
 }
+
 func getBookById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
