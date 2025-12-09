@@ -44,12 +44,15 @@ func getBooks(w http.ResponseWriter, r *http.Request) {
 func createBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var newBook Books
-	err := json.NewDecoder(r.Body).Decode(&newBook)
-	if err != nil {
-		log.Println("Error while decoding: ", err)
-		fmt.Fprint(w, "504 Internal Error")
-		return
-	}
+	// err := json.NewDecoder(r.Body).Decode(&newBook)
+	// if err != nil {
+	// 	log.Println("Error while decoding: ", err)
+	// 	fmt.Fprint(w, "504 Internal Error")
+	// 	return
+	// }
+	newBook.Author = r.FormValue("Author")
+	newBook.Title = r.FormValue("Title")
+
 	newBook.Id = strconv.Itoa(len(MyBooks) + 1)
 	MyBooks = append(MyBooks, newBook)
 	fmt.Fprint(w, "200 OK")
