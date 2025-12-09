@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -40,6 +42,16 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 
 }
 func getBookById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	for _, item := range MyBooks {
+		if item.Id == id {
+			json.NewEncoder(w).Encode(item)
+			return
+		}
+	}
+	fmt.Fprint(w, "No such Book, Sorry!")
 
 }
 
@@ -49,5 +61,6 @@ func main() {
 	r.HandleFunc("/books", createBook).Methods("POST")
 	r.HandleFunc("/books/{id}", getBookById).Methods("GET")
 
-	http.ListenAndServe(":8080", r)
+	log.Println("Server started...")
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
